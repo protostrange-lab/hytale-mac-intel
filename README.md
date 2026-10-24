@@ -9,6 +9,33 @@ co na Macu Intel układa się nieoczekiwanie korzystnie.
 
 ![Hytale w rozgrywce na MacBooku Pro z Intel Core i7 i Radeon Pro 5300M, pod Wine](docs/ingame.jpg)
 
+## English summary
+
+**Hytale runs on Intel Macs, via Wine.** Hytale's official macOS build is Apple
+Silicon only, so Intel Macs cannot run it natively. This project runs the Windows
+build under Wine instead, and it works all the way into gameplay: the main menu,
+singleplayer worlds, and multiplayer servers.
+
+If you searched for *Hytale on Intel Mac*, *Hytale macOS Intel*, *run Hytale
+without Apple Silicon*, *Hytale under Wine on Mac*, or hit
+`CryptographicException: Unknown error (0x80090027)` when entering a world, this
+repo is for you.
+
+**The hard part:** Wine's CNG crypto emulation (`ncrypt`/`crypt32`) is incomplete
+in three spots, which broke the client's local mTLS handshake. A small
+interoperability shim (`wine-fix/`, a `version.dll` proxy that inline-hooks Wine's
+own crypto functions, not the game binary) fills those gaps using the client's own
+ephemeral key. No authentication is bypassed and the game binary is untouched; you
+log in with your own Hytale account.
+
+**Requirements:** an Intel Mac, your own Hytale account, and the game files from a
+Windows install (Boot Camp or another PC). Step-by-step setup is in the Polish
+section "Szybki start" below; `./setup.sh` does it in one command. The rest of this
+README is in Polish and explains how and why it works. Questions in English are
+welcome in the Issues.
+
+---
+
 > ## Stan: DZIAŁA - gra wchodzi do świata na Macu z procesorem Intel
 >
 > Hytale v0.7.4 działa pod Wine na MacBooku Pro 16,1 (2019) z Intel
