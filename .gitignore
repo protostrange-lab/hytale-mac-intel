@@ -1,0 +1,11 @@
+# artefakty testów i pobrane paczki
+*.exe
+*.o
+*.class
+classes/
+cache/
+*.log
+.DS_Store
+# zbudowana wtyczka (buduj z wine-fix/build.sh) + lokalna konfiguracja
+wine-fix/version.dll
+play.local.sh

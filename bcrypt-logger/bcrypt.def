@@ -1,0 +1,57 @@
+EXPORTS
+  BCryptAddContextFunction = bcryptw.BCryptAddContextFunction
+  BCryptAddContextFunctionProvider = bcryptw.BCryptAddContextFunctionProvider
+  BCryptCloseAlgorithmProvider = bcryptw.BCryptCloseAlgorithmProvider
+  BCryptConfigureContext = bcryptw.BCryptConfigureContext
+  BCryptConfigureContextFunction = bcryptw.BCryptConfigureContextFunction
+  BCryptCreateContext = bcryptw.BCryptCreateContext
+  BCryptCreateHash = bcryptw.BCryptCreateHash
+  BCryptDecrypt
+  BCryptDeleteContext = bcryptw.BCryptDeleteContext
+  BCryptDeriveKey
+  BCryptDeriveKeyCapi = bcryptw.BCryptDeriveKeyCapi
+  BCryptDeriveKeyPBKDF2
+  BCryptDestroyHash = bcryptw.BCryptDestroyHash
+  BCryptDestroyKey = bcryptw.BCryptDestroyKey
+  BCryptDestroySecret = bcryptw.BCryptDestroySecret
+  BCryptDuplicateHash = bcryptw.BCryptDuplicateHash
+  BCryptDuplicateKey = bcryptw.BCryptDuplicateKey
+  BCryptEncrypt
+  BCryptEnumAlgorithms = bcryptw.BCryptEnumAlgorithms
+  BCryptEnumContextFunctionProviders = bcryptw.BCryptEnumContextFunctionProviders
+  BCryptEnumContextFunctions = bcryptw.BCryptEnumContextFunctions
+  BCryptEnumContexts = bcryptw.BCryptEnumContexts
+  BCryptEnumProviders = bcryptw.BCryptEnumProviders
+  BCryptEnumRegisteredProviders = bcryptw.BCryptEnumRegisteredProviders
+  BCryptExportKey
+  BCryptFinalizeKeyPair
+  BCryptFinishHash = bcryptw.BCryptFinishHash
+  BCryptFreeBuffer = bcryptw.BCryptFreeBuffer
+  BCryptGenRandom = bcryptw.BCryptGenRandom
+  BCryptGenerateKeyPair
+  BCryptGenerateSymmetricKey
+  BCryptGetFipsAlgorithmMode = bcryptw.BCryptGetFipsAlgorithmMode
+  BCryptGetProperty = bcryptw.BCryptGetProperty
+  BCryptHash = bcryptw.BCryptHash
+  BCryptHashData = bcryptw.BCryptHashData
+  BCryptImportKey
+  BCryptImportKeyPair
+  BCryptKeyDerivation
+  BCryptOpenAlgorithmProvider
+  BCryptQueryContextConfiguration = bcryptw.BCryptQueryContextConfiguration
+  BCryptQueryContextFunctionConfiguration = bcryptw.BCryptQueryContextFunctionConfiguration
+  BCryptQueryContextFunctionProperty = bcryptw.BCryptQueryContextFunctionProperty
+  BCryptQueryProviderRegistration = bcryptw.BCryptQueryProviderRegistration
+  BCryptRegisterConfigChangeNotify = bcryptw.BCryptRegisterConfigChangeNotify
+  BCryptRegisterProvider = bcryptw.BCryptRegisterProvider
+  BCryptRemoveContextFunction = bcryptw.BCryptRemoveContextFunction
+  BCryptRemoveContextFunctionProvider = bcryptw.BCryptRemoveContextFunctionProvider
+  BCryptResolveProviders = bcryptw.BCryptResolveProviders
+  BCryptSecretAgreement
+  BCryptSetAuditingInterface = bcryptw.BCryptSetAuditingInterface
+  BCryptSetContextFunctionProperty = bcryptw.BCryptSetContextFunctionProperty
+  BCryptSetProperty
+  BCryptSignHash
+  BCryptUnregisterConfigChangeNotify = bcryptw.BCryptUnregisterConfigChangeNotify
+  BCryptUnregisterProvider = bcryptw.BCryptUnregisterProvider
+  BCryptVerifySignature
