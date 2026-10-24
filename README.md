@@ -9,10 +9,10 @@ co na Macu Intel układa się nieoczekiwanie korzystnie.
 
 ![Hytale w rozgrywce na MacBooku Pro z Intel Core i7 i Radeon Pro 5300M, pod Wine](docs/ingame.jpg)
 
-> ## Stan: DZIAŁA — gra wchodzi do świata na Macu z procesorem Intel
+> ## Stan: DZIAŁA - gra wchodzi do świata na Macu z procesorem Intel
 >
 > Hytale v0.7.4 działa pod Wine na MacBooku Pro 16,1 (2019) z Intel
-> Core i7-9750H i Radeonem Pro 5300M, pod macOS 26 Tahoe — od menu po **wejście
+> Core i7-9750H i Radeonem Pro 5300M, pod macOS 26 Tahoe - od menu po **wejście
 > do świata jednoosobowego i na serwery multiplayer**. Potwierdzone na żywo:
 >
 > ```
@@ -25,16 +25,17 @@ co na Macu Intel układa się nieoczekiwanie korzystnie.
 > ```
 >
 > Klucz całej układanki okazał się nie być techniczny, tylko w uruchomieniu
-> przez **oficjalny launcher z zalogowanym kontem** — wtedy launcher sam wydaje
+> przez **oficjalny launcher z zalogowanym kontem** - wtedy launcher sam wydaje
 > klientowi token i startuje go z `--auth-mode authenticated`. Problemem było
 > tylko to, że interfejs launchera pod Wine jest niewidoczny. Rozwiązanie:
 > sterować nim przez port debugowania WebView2, którego DOM działa, choć obraz
-> się nie rysuje. Użytkownik loguje się własnymi danymi w przeglądarce — niczego
+> się nie rysuje. Użytkownik loguje się własnymi danymi w przeglądarce - niczego
 > się nie obchodzi ani nie podrabia.
 >
-> Jak uruchomić: `./install.sh`, raz zdobądź pliki gry z Windowsa na partycję
-> widoczną z macOS, potem **`./play.sh`**. Pierwszy raz wymaga zalogowania
-> w przeglądarce; kolejne są automatyczne.
+> Jak uruchomić (prosto): `./setup.sh`, raz zdobądź pliki gry z Windowsa, potem
+> klikasz **Play Hytale** na Pulpicie. Pełna instrukcja krok po kroku jest niżej
+> w sekcji **Szybki start**. Pierwszy raz wymaga zalogowania w przeglądarce;
+> kolejne uruchomienia są automatyczne.
 >
 > ### Dokąd dochodzi
 >
@@ -47,7 +48,7 @@ co na Macu Intel układa się nieoczekiwanie korzystnie.
 > ### Ostatni blocker: lokalny handshake mTLS (rozwiązany)
 >
 > Wejście do świata to połączenie klienta z serwerem przez QUIC z wzajemnym TLS
-> (mTLS) — w singleplayer klient uruchamia własny, lokalny serwer, w multiplayer
+> (mTLS) - w singleplayer klient uruchamia własny, lokalny serwer, w multiplayer
 > łączy się ze zdalnym. Klient .NET padał na:
 >
 > ```
@@ -61,27 +62,76 @@ co na Macu Intel układa się nieoczekiwanie korzystnie.
 > 1. **`NCryptGetProperty`** nie zna wyliczanych właściwości klucza
 >    (`Provider Handle`, `Algorithm Group`…) i zwraca `NTE_INVALID_PARAMETER`.
 > 2. Round-trip **PKCS#12**, którym .NET normalizuje certyfikat klienta, pod Wine
->    daje klucz **mostkowany przez CAPI** — `RSACng` go odrzuca
+>    daje klucz **mostkowany przez CAPI** - `RSACng` go odrzuca
 >    („keys used with the RSACng algorithm must have an algorithm group of RSA").
 > 3. Wine nie potrafi wyeksportować klucza w formacie **`PKCS8_PRIVATEKEY`**,
 >    którego klient potrzebuje, by przekazać go bibliotece QUIC.
 >
-> Wszystkie trzy łata wtyczka **[`wine-fix/`](wine-fix/README.md)** — proxy
+> Wszystkie trzy łata wtyczka **[`wine-fix/`](wine-fix/README.md)** - proxy
 > `version.dll` ładowane do procesu klienta, które inline-hookuje funkcje CNG Wine
 > (`ncrypt`/`crypt32`). Łata operuje **wyłącznie na własnym, efemerycznym kluczu
 > klienta** (tym samym, który klient sam importuje); nie podrabia tokenów, nie
 > wyłącza weryfikacji, nie rusza binarki gry. `play.sh` wgrywa ją automatycznie.
 >
 > > Katalogi `ncrypt-shim/` i `bcrypt-logger/` to **materiał historyczny** z drogi
-> > do rozwiązania — zapis wcześniejszej, błędnej hipotezy „to bcrypt, nie da się
+> > do rozwiązania - zapis wcześniejszej, błędnej hipotezy „to bcrypt, nie da się
 > > załatać z zewnątrz". Zostawione jako ślad śledztwa; nie są używane.
+
+## Szybki start
+
+**Czego potrzebujesz (szczerze):**
+
+- Mac z procesorem **Intel** (to nie zadziała na Apple Silicon, czyli M1/M2/M3...).
+- Darmowe **konto Hytale** (hytale.com) i dostęp do **plików gry z Windowsa**:
+  z Boot Campa na tym Macu albo z innego peceta. Tego jednego kroku nie da się
+  pominąć, bo plików gry nie wolno nam udostępniać.
+- Kilka minut i trochę miejsca na dysku.
+
+**Krok po kroku:**
+
+1. **Pobierz to repozytorium.** W aplikacji Terminal (jest w każdym Macu) wpisz:
+
+   ```bash
+   git clone https://github.com/protostrange-lab/hytale-mac-intel.git
+   cd hytale-mac-intel
+   ```
+
+   Albo na GitHubie kliknij zielony przycisk **Code → Download ZIP**, rozpakuj,
+   i wejdź do tego folderu w Terminalu.
+
+2. **Uruchom jedno polecenie**, które przygotuje wszystko (Wine, łatę i aplikację
+   z ikoną):
+
+   ```bash
+   ./setup.sh
+   ```
+
+   Poczekaj do końca. Pierwszy raz pobiera sporo rzeczy, więc chwilę to trwa.
+
+3. **Skopiuj pliki gry z Windowsa** na dysk widoczny z macOS. Dokładnie jak to
+   zrobić: niżej w tym dokumencie, sekcja „Pliki gry wciąż zdobywasz z Windowsa raz"
+   (i „Warte uwagi: podziel grę na pół", jeśli masz mało miejsca).
+
+4. **Kliknij dwukrotnie „Play Hytale"** na Pulpicie. Pierwszy raz zaloguj się
+   w przeglądarce swoim kontem. I już grasz. 🎮
+
+   Chcesz mieć stały przycisk? Przeciągnij „Play Hytale" na Dock.
+
+> Nie chcesz nic instalować ręcznie? `setup.sh` sam zainstaluje kompilator przez
+> Homebrew. Jeśli nie masz Homebrew, poprosi Cię o jego instalację (https://brew.sh)
+> i o `brew install mingw-w64`, a potem uruchom `./setup.sh` jeszcze raz.
+
+Reszta tego dokumentu to szczegóły: dlaczego to działa, co zmierzono i jak jest
+zbudowane. Do grania wystarczą cztery kroki powyżej.
+
+---
 
 ## Dlaczego to ma szansę
 
 1. **Hytale wymaga OpenGL 4.1.** Od Update 6 (sierpień 2026) to twarda bramka:
    klient kończy działanie od razu, jeśli sterownik zgłosi mniej.
 2. **macOS daje dokładnie OpenGL 4.1.** Apple zamroziło GL na 4.1. Minimum gry
-   i maksimum systemu to ta sama liczba — zapasu nie ma ani krzty.
+   i maksimum systemu to ta sama liczba - zapasu nie ma ani krzty.
 3. **Na Macu Intel Wine nie tłumaczy procesora.** Windowsowa binarka x86_64
    działa na x86_64 natywnie. Z trzech wydanych buildów Hytale dwa
    (`windows/amd64`, `linux/amd64`) są dla tej architektury.
@@ -92,7 +142,7 @@ co na Macu Intel układa się nieoczekiwanie korzystnie.
 
 ## Jak Hytale jest zbudowany
 
-Wbrew temu, co krąży po internecie, nie ma silnika „Flow" — przepisywanie na
+Wbrew temu, co krąży po internecie, nie ma silnika „Flow" - przepisywanie na
 C++ porzucono w listopadzie 2025 i nie weszło do wydania. Wydany jest
 „Legacy Engine":
 
@@ -101,14 +151,14 @@ C++ porzucono w listopadzie 2025 i nie weszło do wydania. Wydany jest
 | klient | C#, skompilowany jako .NET NativeAOT | zwykła natywna binarka PE, **nie trzeba .NET w prefiksie** |
 | serwer | Java, `HytaleServer.jar`, wymaga Javy 25+ | nawet gra jednoosobowa uruchamia osobny proces serwera |
 | okno, wejście, dźwięk | SDL3 | powierzchnia, którą Wine obsługuje najlepiej |
-| interfejs | NoesisGUI | — |
+| interfejs | NoesisGUI | - |
 | launcher | Go 1.26.10 + Wails v2 na webview systemu | na Windows znaczy to WebView2, a ten pod Wine jest kapryśny |
 | sieć | QUIC po UDP, port 5520 | natywna biblioteka quiche, zapas w czystej Javie (netty) |
 | aktualizacje | wharf/butler z itch.io | łatki różnicowe |
 
 Instalacja zajmuje około **8 GB**. Klient przyjmuje argumenty
 `--app-dir`, `--user-dir`, `--java-exec`, `--auth-mode`, `--uuid`, `--name`,
-czyli **da się go uruchomić wprost, bez launchera** — co omija kłopot
+czyli **da się go uruchomić wprost, bez launchera** - co omija kłopot
 z WebView2. Nie ma natomiast żadnego przełącznika wyboru renderera.
 
 ## Co zostało zmierzone
@@ -128,7 +178,7 @@ GLSL       : 4.10
 rozszerzen : 46   max tekstura: 16384   max MSAA: 8
 ```
 
-Te dwie liczby to sedno sprawy — patrz „Jedyne realne ryzyko" niżej.
+Te dwie liczby to sedno sprawy - patrz „Jedyne realne ryzyko" niżej.
 
 **Pełny stos z Javą (połowa serwerowa gry):**
 
@@ -139,7 +189,7 @@ klatki     : 839 fps (clear+swap, bez vsync)    blad GL : 0
 ```
 
 Windowsowy OpenJDK 21 startuje pod Wine bez przeszkód. Kontekst trafia na
-**kartę dyskretną**, nie na Intel UHD 630 — ten byłby poniżej minimum gry.
+**kartę dyskretną**, nie na Intel UHD 630 - ten byłby poniżej minimum gry.
 Vulkan przez MoltenVK też działa (145 rozszerzeń), więc DXVK jest dostępny,
 gdyby gdziekolwiek pojawił się Direct3D.
 
@@ -154,7 +204,7 @@ Zmierzona macierz tworzenia kontekstu pod Wine na tej maszynie:
 | 4.1 core **z** `WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB` | **działa** |
 | 4.1 core **bez** tego bitu | `NULL` |
 | 4.1 compatibility | `NULL` |
-| kontekst domyślny | GL 2.1 — Hytale zamyka się natychmiast |
+| kontekst domyślny | GL 2.1 - Hytale zamyka się natychmiast |
 
 macOS udziela kontekstu powyżej 3.2 wyłącznie w wariancie forward-compatible.
 Wszystko zależy więc od tego, czy `HytaleClient.exe` ustawia ten jeden bit.
@@ -167,7 +217,7 @@ projekt Hytale-Aurora-Shaders podkłada klientowi własny `opengl32.dll` obok
 Uwaga na ślepy zaułek: `wine-glcore-interpose` naprawia tylko przypadek
 kontekstu domyślnego, bo podpina się pod `CGLChoosePixelFormat`. Jawne żądanie
 4.1 core bez tego bitu jest odrzucane wcześniej, po stronie procesora,
-w `winemac.drv` — w dostarczonym `winemac.so` siedzi dosłownie komunikat
+w `winemac.drv` - w dostarczonym `winemac.so` siedzi dosłownie komunikat
 „OS X only supports forward-compatible 3.2+ contexts".
 
 Drugie ryzyko jest nietechniczne: telemetria klienta jest „limited", ale
@@ -183,11 +233,11 @@ brew install mingw-w64        # kompilator do łaty CNG
 (cd wine-fix && ./build.sh)   # buduje wine-fix/version.dll (łata CNG; play.sh ją wgra)
 ```
 
-> Łata `wine-fix/version.dll` nie jest trzymana w repo jako binarka — zbuduj ją ze
+> Łata `wine-fix/version.dll` nie jest trzymana w repo jako binarka - zbuduj ją ze
 > źródła powyższym `build.sh`. `play.sh` wgrywa ją automatycznie przy starcie i bez
 > niej gra nie wejdzie do świata (patrz [`wine-fix/`](wine-fix/README.md)).
 
-Potem pobierz launcher **dla Windows**. Sam launcher jest publiczny — konto
+Potem pobierz launcher **dla Windows**. Sam launcher jest publiczny - konto
 jest potrzebne dopiero do zalogowania się w nim i do licencji na grę:
 
 ```bash
@@ -206,7 +256,7 @@ dla kogo Hytale wychodzi:
 ```
 
 Instalator jest 32-bitowym stubem NSIS. Na macOS nie ma już kodu 32-bit, ale
-**nowy WoW64 w Wine 11 go uruchamia** — sprawdzone. Instalator dociąga przy
+**nowy WoW64 w Wine 11 go uruchamia** - sprawdzone. Instalator dociąga przy
 okazji środowisko Edge WebView2 (ponad 700 MB), bo launcher jest aplikacją
 Wails i bez niego nie narysuje interfejsu. Daj mu kilka minut.
 
@@ -237,7 +287,7 @@ network connectivity detected  status=online
 loopback server starting  addr=127.0.0.1:64038
 ```
 
-Powstaje okno 1020×640 z poprawnym paskiem tytułu — i **całkowicie białą
+Powstaje okno 1020×640 z poprawnym paskiem tytułu - i **całkowicie białą
 zawartością**. Renderer Chromium nie maluje nic. Próbowane bez skutku:
 `--disable-gpu`, `--disable-gpu-compositing`, `--disable-software-rasterizer=0`,
 `--disable-features=RendererCodeIntegrity`, `--no-sandbox`,
@@ -276,9 +326,9 @@ uruchamiać (`WebView2Process failed with kind 6`), więc **cofnij podmianę**.
 
 ### Co jednak działa: okno jest ślepe, ale nie głuche
 
-Zgłoszenie mówi, że DOM strony żyje — produkowana jest tylko jedna klatka.
+Zgłoszenie mówi, że DOM strony żyje - produkowana jest tylko jedna klatka.
 I rzeczywiście: sterując oknem z zewnątrz (CGEvent, Tab + Enter) udało się
-raz uruchomić logowanie — launcher otworzył prawdziwą stronę
+raz uruchomić logowanie - launcher otworzył prawdziwą stronę
 `accounts.hytale.com/login?flow=...` w przeglądarce systemowej. Wejście
 dociera więc do strony.
 
@@ -299,7 +349,7 @@ KBufferResolveProgram
 ```
 
 Plik shadera to `KBufferResolveFS.glsl`. K-buffer to technika przezroczystości
-niezależnej od kolejności rysowania — wymaga zapisu do obrazów z poziomu
+niezależnej od kolejności rysowania - wymaga zapisu do obrazów z poziomu
 shadera fragmentów, czyli `GL_ARB_shader_image_load_store`, które weszło do
 core dopiero w OpenGL 4.2. macOS kończy się na 4.1 i tego rozszerzenia nie
 wystawia, co zmierzyłem (patrz `doctor.sh`).
@@ -341,7 +391,7 @@ ERROR|AuthManager|Failed to generate certificate
   Pkcs12LoadLimitExceededException: The PKCS#12/PFX violated the 'MacIterationLimit' limit.
 ```
 
-⚠️ **To NIE jest blokada Hytale** — sprawdź znaczniki czasu. Wyjątek kończący
+⚠️ **To NIE jest blokada Hytale** - sprawdź znaczniki czasu. Wyjątek kończący
 grę pada o 23:39:42.30 (brak tokenu), a ten błąd o 23:39:43.15, sekundę
 później, w osobnym zadaniu generowania certyfikatu. Łatwo je pomylić, bo leżą
 obok siebie w logu.
@@ -360,11 +410,11 @@ HKLM\Software\Microsoft\Windows\CurrentVersion\PFX\PasswordIterationCount
 ```
 
 Efekt: **każda aplikacja .NET 9+ pod Wine, która przepuszcza certyfikat przez
-PFX w tę i z powrotem, wywróci się w tym miejscu** — niezależnie od Hytale.
+PFX w tę i z powrotem, wywróci się w tym miejscu** - niezależnie od Hytale.
 To nadaje się na zgłoszenie do WineHQ (komponent `crypt32`).
 
-Obejścia istnieją — przebudowa GnuTLS z `--with-pkcs12-iter-count=2000`
-podstawiona przez `DYLD_LIBRARY_PATH`, albo łata na `crypt32` w Wine — ale
+Obejścia istnieją - przebudowa GnuTLS z `--with-pkcs12-iter-count=2000`
+podstawiona przez `DYLD_LIBRARY_PATH`, albo łata na `crypt32` w Wine - ale
 w przypadku Hytale nie ma sensu ich stosować, bo gra zatrzymuje się wcześniej,
 na braku tokenu.
 
@@ -377,7 +427,7 @@ flaga zdefiniowana nie wywoła błędu.
 ⚠️ **Pułapka metodologiczna, na którą sam się nabrałem:** przy czterech
 sekundach na próbę połowa flag wyglądała na istniejące. Przy ośmiu sekundach
 i z dodanymi kontrolami (flagami zmyślonymi) okazało się, że **nie istnieje
-żadna** — wcześniejsze „trafienia" to był wyścig z czasem startu procesu.
+żadna** - wcześniejsze „trafienia" to był wyścig z czasem startu procesu.
 Jeśli powtarzasz takie badanie, zawsze dorzuć kontrolę.
 
 Nie istnieją: `--login`, `--offline`, `--no-gui`, `--launch-game`, `--silent`,
@@ -397,7 +447,7 @@ Tak ma być i nie ma tu czego obchodzić.
 
 ### Rozwiązanie: sterować launcherem przez DevTools (działa)
 
-Uruchamianie samego klienta z pominięciem launchera **nie wystarczy** — nawet
+Uruchamianie samego klienta z pominięciem launchera **nie wystarczy** - nawet
 tryb `--auth-mode offline` kończy się na:
 
 ```
@@ -406,7 +456,7 @@ Offline mode requires HYTALE_OFFLINE_TOKEN environment variable
 
 Token wydaje tylko launcher po zalogowaniu. A launcher pod Wine się nie rysuje.
 Przełom: jego **DOM żyje**, mimo że obraz nie. WebView2 ma protokół debugowania
-(CDP), który można włączyć przez politykę rejestru — i tej drogi Wails nie
+(CDP), który można włączyć przez politykę rejestru - i tej drogi Wails nie
 nadpisuje (w przeciwieństwie do zmiennej środowiskowej):
 
 ```
@@ -414,7 +464,7 @@ HKLM\SOFTWARE\Policies\Microsoft\Edge\WebView2\AdditionalBrowserArguments
   = --remote-debugging-port=9222 --remote-allow-origins=*
 ```
 
-Z portem 9222 można czytać DOM i klikać elementy po nazwie klasy CSS — bez
+Z portem 9222 można czytać DOM i klikać elementy po nazwie klasy CSS - bez
 zgadywania pikseli. Łańcuch, który robi `play.sh`:
 
 1. klik `button.login__sign-in-button` → launcher otwiera prawdziwy OAuth
@@ -430,7 +480,7 @@ zgadywania pikseli. Łańcuch, który robi `play.sh`:
 Niczego się nie obchodzi: to oficjalny launcher, Twoje konto, Twój token,
 Twoje logowanie. Wkład tego repo to obejście **błędu renderowania** launchera
 oraz **uzupełnienie braków kryptografii Wine** (interop, patrz
-[`wine-fix/`](wine-fix/README.md)) — nie obejście bramki uwierzytelniania.
+[`wine-fix/`](wine-fix/README.md)) - nie obejście bramki uwierzytelniania.
 
 **Dwie pułapki ścieżek**, które `play.sh` załatwia (bez nich launcher zgłasza
 „Assets.zip does not exist" albo klient nie znajduje danych):
@@ -444,7 +494,7 @@ oraz **uzupełnienie braków kryptografii Wine** (interop, patrz
 ### Pliki gry wciąż zdobywasz z Windowsa raz
 
 Launcher pod Wine uruchomi i zaloguje grę, ale jego ekran pobierania to też
-WebView2 — więc **pierwsze pobranie plików robisz na prawdziwym Windowsie**
+WebView2 - więc **pierwsze pobranie plików robisz na prawdziwym Windowsie**
 (Boot Camp lub inny komputer) na partycję widoczną z macOS (exFAT). Potem już
 tylko `play.sh`. Aktualizacje gry analogicznie: pobierasz na Windowsie, grasz
 na macOS.
@@ -453,7 +503,7 @@ na macOS.
 
 Nawet gra jednoosobowa uruchamia osobny serwer w Javie, i to **ta połowa jest
 cięższa dla procesora** (generowanie świata, logika wokseli, NPC). Nie ma
-powodu, żeby pchać ją przez Wine — Java na macOS x86_64 istnieje i działa
+powodu, żeby pchać ją przez Wine - Java na macOS x86_64 istnieje i działa
 natywnie. Klient pod Wine, serwer natywnie, połączenie przez `localhost:5520`.
 Wymaga dołączania po adresie zamiast przycisku gry jednoosobowej, bo ten sam
 uruchamia serwer jako proces potomny przez `--java-exec`.
@@ -474,7 +524,7 @@ zrobiona.
 
 ## Zegar tyka
 
-macOS 26 Tahoe to ostatni macOS dla procesorów Intel — macOS 27 kończy ich
+macOS 26 Tahoe to ostatni macOS dla procesorów Intel - macOS 27 kończy ich
 wsparcie. CrossOver 27 i Parallels 27 już Intela porzuciły. Cokolwiek się tu
 zrobi, warto zrobić teraz.
 
@@ -483,12 +533,12 @@ Intel. Ich wpis z 1 grudnia 2025 mówi o zamiarze wsparcia „older Macs (Intel
 Processors)" obok „newer Macs with M1+". Rozpowszechnione twierdzenie o odmowie
 pochodzi z pojedynczej strony bez źródła pierwotnego. Zamiar jest sprzed
 dziesięciu miesięcy i bez widocznych postępów, ale formalnie nie został
-wycofany — warto o niego dopytywać, zamiast zakładać, że sprawa jest zamknięta.
+wycofany - warto o niego dopytywać, zamiast zakładać, że sprawa jest zamknięta.
 
 ## Wkład
 
 Jeśli uruchomisz to u siebie, zgłoś: model Maca, procesor, GPU, wersję macOS,
-wersję Wine, wyjście `./doctor.sh` i czy gra faktycznie ruszyła — a jeśli nie,
+wersję Wine, wyjście `./doctor.sh` i czy gra faktycznie ruszyła - a jeśli nie,
 na czym się zatrzymała. Najbardziej brakuje potwierdzeń z innych konfiguracji,
 zwłaszcza z Maców z GPU Nvidii.
 
@@ -499,11 +549,11 @@ Warto też wysłać zgłoszenie do [WineHQ AppDB](https://appdb.winehq.org/).
 Repozytorium nie zawiera, nie pobiera i nie rozprowadza plików gry ani nie
 obchodzi uwierzytelniania. Potrzebne jest własne konto i licencja Hytale. To
 wyłącznie konfiguracja warstwy zgodności (Wine) plus łata interop na braki Wine
-— ten sam gatunek rzeczy co przepisy instalacyjne Lutrisa czy zgłoszenia do WineHQ.
+- ten sam gatunek rzeczy co przepisy instalacyjne Lutrisa czy zgłoszenia do WineHQ.
 
 Wtyczka `wine-fix/version.dll` to proxy biblioteki systemowej ładowane **do
 procesu klienta**, które inline-hookuje funkcje kryptograficzne **Wine**
-(`ncrypt`/`crypt32`), by uzupełnić ich braki — **binarka gry pozostaje
+(`ncrypt`/`crypt32`), by uzupełnić ich braki - **binarka gry pozostaje
 nietknięta**. Łata działa wyłącznie na własnym, efemerycznym kluczu klienta;
 nie podrabia tokenów i nie wyłącza żadnej weryfikacji. Szczegóły i granice:
 [`wine-fix/README.md`](wine-fix/README.md).

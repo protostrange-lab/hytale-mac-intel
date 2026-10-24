@@ -1,5 +1,5 @@
 /*
- * hytale-wine-fix  —  version.dll proxy that patches three gaps in Wine's CNG
+ * hytale-wine-fix  -  version.dll proxy that patches three gaps in Wine's CNG
  * stack so Hytale's .NET client can complete its local mTLS handshake and enter
  * singleplayer worlds under Wine on Intel macOS. Loaded into HytaleClient.exe via
  * the game's own version.dll import (forwards the real version.dll to versionw.dll).
@@ -12,7 +12,7 @@
  *      isn't RSA, so RSACng rejects it.
  *   3. bcrypt/ncrypt cannot export the PKCS8_PRIVATEKEY blob the client needs.
  * We fix all three with the key material the client itself imports. Pure interop;
- * no auth is bypassed — the client still logs in and signs with its own real key.
+ * no auth is bypassed - the client still logs in and signs with its own real key.
  *
  * Build: x86_64-w64-mingw32-gcc -O2 -shared -o version.dll hytale-wine-fix.c \
  *          minhook/src/{buffer,hook,trampoline}.c minhook/src/hde/hde64.c \
@@ -139,7 +139,7 @@ static BOOL WINAPI h_AcquirePk(PCCERT_CONTEXT c,DWORD f,void*p,HCRYPTPROV_OR_NCR
     if (!blob) return r;
     /* Decide if the acquired key is usable as a CNG RSA key. Only a genuine NCRYPT
      * handle (keyspec==CERT_NCRYPT_KEYSPEC) may be read as a Wine ncrypt object;
-     * a CAPI-bridged handle is not one, so never dereference it — just substitute. */
+     * a CAPI-bridged handle is not one, so never dereference it - just substitute. */
     int needsub = 1;
     if (s && *s==CERT_NCRYPT_KEYSPEC) {
         unsigned int ty = *(unsigned int*)(ULONG_PTR)*h;
@@ -232,7 +232,7 @@ static DWORD WINAPI installer(LPVOID unused)
     ok &= MH_CreateHook(GetProcAddress(c32,"CryptAcquireCertificatePrivateKey"),(void*)h_AcquirePk,(void**)&o_AcquirePk)==MH_OK;
     /* fail-closed: either all hooks install and enable, or none run (no half-hooked state
      * where an o_* trampoline is NULL and a hook calls through it). */
-    if (!ok) { L("hook creation failed — not enabling"); MH_Uninitialize(); return 0; }
+    if (!ok) { L("hook creation failed - not enabling"); MH_Uninitialize(); return 0; }
     if (MH_EnableHook(MH_ALL_HOOKS)!=MH_OK) { L("MH_EnableHook failed"); MH_Uninitialize(); return 0; }
     L("hytale-wine-fix installed");
     return 0;

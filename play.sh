@@ -4,10 +4,10 @@
 # Jak to działa (żadnego obchodzenia zabezpieczeń):
 #   1. Otwiera oficjalny launcher pod Wine.
 #   2. Otwiera port debugowania WebView2 przez rejestr (tego Wails nie nadpisuje),
-#      bo interfejs launchera pod Wine jest niewidoczny — ale jego DOM żyje.
+#      bo interfejs launchera pod Wine jest niewidoczny - ale jego DOM żyje.
 #   3. Klika "Sign in" w DOM launchera. TY logujesz się w przeglądarce swoimi
 #      danymi. Launcher dostaje od serwera Hytale Twój token offline.
-#   4. Klika "PLAY". Launcher uruchamia klienta z Twoim tokenem — jak na Windowsie.
+#   4. Klika "PLAY". Launcher uruchamia klienta z Twoim tokenem - jak na Windowsie.
 #
 # Pierwsze uruchomienie wymaga logowania w przeglądarce. Kolejne są automatyczne,
 # dopóki sesja launchera jest ważna (plik account.dat).
@@ -45,8 +45,8 @@ warn() { printf '\033[1;33m  uwaga\033[0m %s\n' "$*"; }
 fail() { printf '\033[1;31m  !!\033[0m %s\n' "$*" >&2; exit 1; }
 
 command -v node >/dev/null || fail "potrzebny Node.js (ma wbudowany WebSocket)"
-[[ -x "$WINE_BIN/wine" ]] || fail "brak Wine — uruchom ./install.sh"
-[[ -f "$PREFIX/system.reg" ]] || fail "brak prefiksu — uruchom ./install.sh"
+[[ -x "$WINE_BIN/wine" ]] || fail "brak Wine - uruchom ./install.sh"
+[[ -f "$PREFIX/system.reg" ]] || fail "brak prefiksu - uruchom ./install.sh"
 [[ -d "$GAME_ROOT/install" ]] || fail "nie znalazłem gry w $GAME_ROOT (ustaw HYTALE_ROOT)"
 
 # --- mapowania ścieżek: launcher i klient oczekują windowsowych lokalizacji ---
@@ -65,21 +65,21 @@ ln -sfn "$GAME_ROOT" "$WIN_APPDATA/Hytale"
 ok "D: -> $(dirname "$GAME_ROOT"); %APPDATA%\\Hytale i C:\\Users\\$WIN_USER\\...\\Hytale -> gra"
 
 # --- łata CNG Wine: wtyczka version.dll pozwala klientowi dokończyć lokalny mTLS ---
-# (bez niej klient pada na 0x80090027 przy wejściu do świata — patrz wine-fix/README.md)
+# (bez niej klient pada na 0x80090027 przy wejściu do świata - patrz wine-fix/README.md)
 CLIENT_DIR="$GAME_ROOT/install/release/package/game/latest/Client"
 FIX_DLL="$HERE/wine-fix/version.dll"
 # prawdziwe version.dll Wine = cel forwardu proxy; można nadpisać WINE_VERSION_DLL
 WINE_VERSION_DLL="${WINE_VERSION_DLL:-$WINE_BIN/../lib/wine/x86_64-windows/version.dll}"
 if [[ ! -d "$CLIENT_DIR" ]]; then
-  warn "nie znalazłem katalogu klienta: $CLIENT_DIR — pomijam łatę CNG"
+  warn "nie znalazłem katalogu klienta: $CLIENT_DIR - pomijam łatę CNG"
 elif [[ ! -f "$FIX_DLL" ]]; then
   # usuń stare proxy, by nie zostawić forwardu bez celu (klient by nie wstał)
   rm -f "$CLIENT_DIR/version.dll" "$CLIENT_DIR/versionw.dll"
-  warn "brak $FIX_DLL — zbuduj: (cd wine-fix && ./build.sh). Bez tego gra nie wejdzie do świata."
+  warn "brak $FIX_DLL - zbuduj: (cd wine-fix && ./build.sh). Bez tego gra nie wejdzie do świata."
 elif [[ ! -f "$WINE_VERSION_DLL" ]]; then
   # proxy version.dll forwarduje KAŻDY eksport do versionw.dll; bez celu klient nie wstanie
   rm -f "$CLIENT_DIR/version.dll" "$CLIENT_DIR/versionw.dll"
-  warn "nie znalazłem builtin version.dll Wine ($WINE_VERSION_DLL) — pomijam łatę (ustaw WINE_VERSION_DLL)"
+  warn "nie znalazłem builtin version.dll Wine ($WINE_VERSION_DLL) - pomijam łatę (ustaw WINE_VERSION_DLL)"
 else
   # najpierw cel forwardu (versionw.dll), potem proxy (version.dll)
   if cp -f "$WINE_VERSION_DLL" "$CLIENT_DIR/versionw.dll" && cp -f "$FIX_DLL" "$CLIENT_DIR/version.dll"; then
@@ -115,7 +115,7 @@ ok "launcher gotowy"
 sleep 6
 STATE="$(node "$HERE/tools/cdp.mjs" eval 'location.pathname' 2>/dev/null | tr -d '"')"
 if [[ "$STATE" == *login* ]]; then
-  info "Potrzebne logowanie — klikam \"Sign in\", otworzy się przeglądarka"
+  info "Potrzebne logowanie - klikam \"Sign in\", otworzy się przeglądarka"
   node "$HERE/tools/cdp-wait-click.mjs" "button.login__sign-in-button" 30 >/dev/null 2>&1 \
     || warn "nie udało się kliknąć Sign in"
   echo
@@ -144,6 +144,6 @@ if pgrep -f HytaleClient >/dev/null 2>&1; then
   echo
   ok "Hytale działa. Jeśli walidacja plików zgłosi błąd, sprawdź HYTALE_WIN_USER."
 else
-  warn "klient nie wystartował — zajrzyj do logu launchera: /tmp/hytale-launcher.log"
+  warn "klient nie wystartował - zajrzyj do logu launchera: /tmp/hytale-launcher.log"
   warn "oraz do $GAME_ROOT/UserData/Logs/"
 fi

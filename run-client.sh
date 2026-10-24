@@ -4,7 +4,7 @@
 # Stan na dziś: klient dochodzi do ekranu tuż przed wejściem do świata
 # i zatrzymuje się, bo tryb offline wymaga zmiennej HYTALE_OFFLINE_TOKEN,
 # którą wydaje wyłącznie oficjalny launcher. Ten skrypt NIE obchodzi tej
-# bramki — jeśli zmienna jest ustawiona w środowisku, po prostu ją przekaże.
+# bramki - jeśli zmienna jest ustawiona w środowisku, po prostu ją przekaże.
 set -euo pipefail
 
 WINE_FLAVOUR="${WINE_FLAVOUR:-staging}"
@@ -34,12 +34,12 @@ export MVK_CONFIG_FORCE_LOW_POWER_GPU=0  # nie spadaj na uklad zintegrowany
 info() { printf '\033[1;34m==>\033[0m %s\n' "$*"; }
 fail() { printf '\033[1;31m  !!\033[0m %s\n' "$*" >&2; exit 1; }
 
-[[ -x "$WINE_BIN/wine" ]] || fail "brak Wine — uruchom ./install.sh"
-[[ -f "$PREFIX/system.reg" ]] || fail "brak prefiksu — uruchom ./install.sh"
+[[ -x "$WINE_BIN/wine" ]] || fail "brak Wine - uruchom ./install.sh"
+[[ -f "$PREFIX/system.reg" ]] || fail "brak prefiksu - uruchom ./install.sh"
 [[ -d "$GAME_ROOT/$CLIENT_REL" ]] || fail "nie znalazłem gry w $GAME_ROOT
      Ustaw HYTALE_ROOT na katalog, w którym leży Hytale."
 
-# Dysk D: w prefiksie ma wskazywać tam, gdzie gra — tak jak pod Windowsem.
+# Dysk D: w prefiksie ma wskazywać tam, gdzie gra - tak jak pod Windowsem.
 GAME_PARENT="$(dirname "$GAME_ROOT")"
 ln -sfn "$GAME_PARENT" "$PREFIX/dosdevices/d:"
 # Klient szuka swoich danych w %APPDATA%\Hytale; odwzorowujemy złącze z Windows.

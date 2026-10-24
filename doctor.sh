@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Sprawdza, czy ten Mac naprawdę potrafi to, czego Hytale wymaga:
 # kontekst OpenGL 4.1 Core na karcie dyskretnej, widziany z windowsowej Javy.
-# Nie dotyka plików gry — testuje sam stos.
+# Nie dotyka plików gry - testuje sam stos.
 set -uo pipefail
 
 WINE_FLAVOUR="${WINE_FLAVOUR:-staging}"
@@ -45,7 +45,7 @@ system_profiler SPDisplaysDataType 2>/dev/null |
   awk -F': ' '/Chipset Model/{printf "  %-14s %s\n", "GPU", $2}'
 
 [[ "$(uname -m)" == "x86_64" ]] && PASS "Mac z procesorem Intel" \
-  || SKIP "to nie jest Mac Intel — ten przepis jest dla Intela"
+  || SKIP "to nie jest Mac Intel - ten przepis jest dla Intela"
 
 HEAD "Wine"
 if [[ -x "$WINE_BIN/wine" ]]; then
@@ -55,14 +55,14 @@ if [[ -x "$WINE_BIN/wine" ]]; then
   [[ "$A" == *x86_64* ]] && PASS "binarka Wine x86_64 (bez tłumaczenia CPU)" \
     || FAIL "binarka Wine nie jest x86_64: $A"
 else
-  FAIL "brak Wine — uruchom najpierw ./install.sh"
+  FAIL "brak Wine - uruchom najpierw ./install.sh"
 fi
 
 HEAD "Prefiks"
 if [[ -f "$PREFIX/system.reg" ]]; then
   grep -aq '#arch=win64' "$PREFIX/system.reg" \
     && PASS "prefiks 64-bitowy: $PREFIX" \
-    || FAIL "prefiks nie jest win64 — usuń go i uruchom ./install.sh"
+    || FAIL "prefiks nie jest win64 - usuń go i uruchom ./install.sh"
 else
   FAIL "brak prefiksu: $PREFIX"
 fi
@@ -84,7 +84,7 @@ fi
 if [[ -f "$PREFIX/drive_c/windows/system32/d3d11.dll.wine-backup" ]]; then
   printf '        d3d11.dll podmieniony na DXVK (cofnij: ./run-hytale.sh --no-dxvk)\n'
 else
-  printf '        d3d11.dll to wined3d (Direct3D 11 -> OpenGL) — domyślnie i słusznie\n'
+  printf '        d3d11.dll to wined3d (Direct3D 11 -> OpenGL) - domyślnie i słusznie\n'
 fi
 
 # ------------------------------------------------------------------ test natywny
@@ -98,7 +98,7 @@ if command -v swiftc >/dev/null 2>&1; then
       PASS "macOS daje kontekst OpenGL 4.1"
     else
       sed 's/^/        /' <<<"$OUT"
-      FAIL "brak kontekstu 4.1 — Hytale tego wymaga"
+      FAIL "brak kontekstu 4.1 - Hytale tego wymaga"
     fi
   else
     SKIP "nie udało się skompilować testu Swift"
@@ -135,7 +135,7 @@ if ! command -v javac >/dev/null 2>&1; then
 elif [[ ! -x "$WINE_BIN/wine" ]]; then
   SKIP "brak Wine"
 else
-  # windowsowy JRE — taki, jaki launcher Hytale pobiera sobie sam
+  # windowsowy JRE - taki, jaki launcher Hytale pobiera sobie sam
   if [[ ! -x "$CACHE/$JRE_DIR/bin/java.exe" ]]; then
     printf '        pobieram windowsowy JRE 21 (47 MB)...\n'
     if curl -fsL --max-time 600 -o "$CACHE/jre.zip" "$JRE_URL"; then
@@ -150,7 +150,7 @@ else
     fi
   fi
 
-  # LWJGL z Maven Central — ta sama biblioteka, przez którą Hytale gada z OpenGL
+  # LWJGL z Maven Central - ta sama biblioteka, przez którą Hytale gada z OpenGL
   CP_PARTS=()
   miss=0
   for m in lwjgl lwjgl-glfw lwjgl-opengl; do
@@ -187,7 +187,7 @@ fi
 HEAD "Podsumowanie"
 printf '  zdane: %d   niezdane: %d   pominięte: %d\n\n' "$pass" "$failn" "$skip"
 if (( failn > 0 )); then
-  echo "  Coś nie działa — bez tego Hytale nie ruszy. Zajrzyj w README (sekcja Kłopoty)."
+  echo "  Coś nie działa - bez tego Hytale nie ruszy. Zajrzyj w README (sekcja Kłopoty)."
   exit 1
 fi
 echo "  Stos jest gotowy. Pobierz oficjalny launcher Hytale dla Windows ze swojego"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Przygotowuje warstwę Wine do uruchomienia Hytale na Macu z procesorem Intel.
-# Nie pobiera i nie rozprowadza żadnych plików gry — grę pobierasz sam,
+# Nie pobiera i nie rozprowadza żadnych plików gry - grę pobierasz sam,
 # własnym kontem Hytale, oficjalnym launcherem dla Windows.
 set -euo pipefail
 
@@ -32,7 +32,7 @@ info "Sprawdzam maszynę"
 
 ARCH="$(uname -m)"
 if [[ "$ARCH" != "x86_64" ]]; then
-  fail "Ten przepis jest dla Maców Intel (x86_64). Masz $ARCH — na Apple Silicon
+  fail "Ten przepis jest dla Maców Intel (x86_64). Masz $ARCH - na Apple Silicon
         zainstaluj po prostu oficjalny Hytale, jest wspierany natywnie."
 fi
 ok "procesor Intel ($(sysctl -n machdep.cpu.brand_string))"
@@ -43,7 +43,7 @@ if (( OS_MAJOR < 15 )); then
   printf '  uwaga: testowane na macOS 26 (Tahoe); starsze wersje mogą się zachowywać inaczej\n'
 fi
 
-# Hytale wymaga OpenGL 4.1, a macOS oferuje dokładnie 4.1 — ale tylko na GPU,
+# Hytale wymaga OpenGL 4.1, a macOS oferuje dokładnie 4.1 - ale tylko na GPU,
 # które to wspiera. Sprawdzamy realnie, nie po nazwie karty.
 GPU="$(system_profiler SPDisplaysDataType 2>/dev/null | awk -F': ' '/Chipset Model/{print $2}' | paste -sd' / ' -)"
 ok "GPU: ${GPU:-nieznane}"
@@ -113,11 +113,11 @@ cat <<EOF
   Wine      : $("$WINE_BIN/wine" --version)
   prefiks   : $PREFIX
 
-  Następny krok — sprawdź, czy stos graficzny faktycznie działa:
+  Następny krok - sprawdź, czy stos graficzny faktycznie działa:
       ./doctor.sh
 
   Potem pobierz oficjalny launcher Hytale dla Windows ze swojego konta
-  (accounts.hytale.com — wymaga konta i licencji) i uruchom:
+  (accounts.hytale.com - wymaga konta i licencji) i uruchom:
       ./run-hytale.sh ~/Downloads/HytaleLauncher.exe
 
 EOF
