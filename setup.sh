@@ -6,6 +6,28 @@ set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; cd "$HERE"
 step() { printf '\n\033[1;36m=== %s ===\033[0m\n' "$*"; }
 
+# --- Chowa projekt do standardowego miejsca na dysku (Application Support), zeby na
+#     pulpicie zostala tylko aplikacja "Play Hytale". Robi to raz; potem skrypt
+#     uruchamia sie juz stamtad i ten blok jest pomijany. ---
+TARGET="$HOME/Library/Application Support/hytale-mac-intel"
+if [ "$HERE" != "$TARGET" ]; then
+  mkdir -p "$(dirname "$TARGET")"
+  if [ -e "$TARGET" ]; then
+    echo "Projekt juz jest w: $TARGET - uruchamiam stamtad."
+    echo "Folder, z ktorego wlasnie klikasz ($HERE), mozesz potem usunac."
+    exec /bin/bash "$TARGET/setup.sh"
+  fi
+  echo "Chowam projekt do: $TARGET"
+  if mv "$HERE" "$TARGET" 2>/dev/null; then
+    exec /bin/bash "$TARGET/setup.sh"
+  elif cp -R "$HERE" "$TARGET" 2>/dev/null; then
+    echo "(skopiowano; folder \"$HERE\" mozesz teraz usunac)"
+    exec /bin/bash "$TARGET/setup.sh"
+  else
+    echo "Nie udalo sie przeniesc do Application Support - kontynuuje z $HERE."
+  fi
+fi
+
 step "1/3  Wine + prefiks (install.sh)"
 ./install.sh || { echo "install.sh nie przeszedl - zajrzyj w komunikat wyzej i sprobuj ponownie"; exit 1; }
 
